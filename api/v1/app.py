@@ -12,21 +12,27 @@ CORS(app, resources={"/*": {"origins": '0.0.0.0'}})
 app.register_blueprint(app_views)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-
 @app.teardown_appcontext
 def teardown_appcontext(error):
-    """teardown_appcontext"""
+     teardown_db(exception):
+    """
+    after each request, this method calls .close() (i.e. .remove()) on
+    the current SQLAlchemy Session
+    """
     storage.close()
 
 
 @app.errorhandler(404)
+ """Global Route to handle All Error Status Codes"""
 def page_404(error):
-    """ Return a custom 404 error """
     err_dict = {"error": "Not found"}
     return jsonify(err_dict), 404
 
 
 if __name__ == "__main__":
+    """
+    MAIN Flask App
+    """
     host = getenv('HBNB_API_HOST', '0.0.0.0')
     port = getenv('HBNB_API_PORT', '5000')
     app.run(host=host, port=port, threaded=True)
